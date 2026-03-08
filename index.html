@@ -87,6 +87,33 @@
 
   .nav-links a:hover { color: var(--accent); }
 
+  /* HAMBURGUER */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 110;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
   /* HERO */
   .hero {
     position: relative;
@@ -919,6 +946,120 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVIDADE MOBILE
+  ═══════════════════════════════════════ */
+  @media (max-width: 640px) {
+
+    /* NAV */
+    nav { padding: 14px 20px; }
+    .nav-hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: fixed;
+      top: 53px; left: 0; right: 0;
+      background: rgba(10,14,26,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      padding: 12px 0 20px;
+      gap: 0;
+      z-index: 99;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links li { width: 100%; }
+    .nav-links a {
+      display: block;
+      padding: 14px 24px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(31,45,69,0.5);
+    }
+    .nav-links li:last-child a { border-bottom: none; }
+
+    /* HERO */
+    .hero { padding: 88px 20px 48px; min-height: auto; }
+    .hero-tag { font-size: 10px; letter-spacing: 2px; padding: 5px 12px; margin-bottom: 20px; }
+    .hero-sub { font-size: 13px; }
+    .hero-score-preview { gap: 6px; margin-top: 28px; }
+    .score-dot { width: 38px; height: 38px; font-size: 11px; }
+    .hero-cta { margin-top: 28px; flex-direction: column; align-items: stretch; }
+    .btn-primary, .btn-outline { text-align: center; }
+
+    /* SECTIONS */
+    section, #calculadora { padding: 52px 20px; }
+
+    /* SOBRE */
+    .sobre-grid { grid-template-columns: 1fr; }
+    .info-card { padding: 20px; }
+    .info-card.highlight { grid-column: span 1; }
+
+    /* COMPONENTES */
+    .componentes-grid { grid-template-columns: 1fr; }
+    .comp-header { padding: 16px 18px 12px; }
+    .comp-item { padding: 10px 18px; }
+
+    /* CLASSIFICAÇÃO */
+    .class-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .class-range { font-size: 20px; }
+    .class-name { font-size: 12px; }
+    .class-desc { font-size: 11px; }
+
+    /* CALCULADORA */
+    .calc-wrapper { border-radius: 4px; }
+    .calc-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 20px;
+    }
+    .calc-patient-info { width: 100%; flex-direction: column; }
+    .patient-input { width: 100% !important; }
+    .calc-body { grid-template-columns: 1fr; }
+    .calc-section { padding: 20px; border-right: none; border-bottom: 1px solid var(--border); }
+    .calc-section:last-child { border-bottom: none; }
+    .calc-score-badge { width: 40px; height: 40px; font-size: 18px; }
+
+    /* RESULTADO */
+    .calc-result {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 22px 20px;
+    }
+    .result-score-big { font-size: 54px; letter-spacing: -2px; }
+    .result-label { min-width: unset; width: 100%; }
+    .result-classification { font-size: 20px; }
+    .result-description { font-size: 13px; }
+    .action-item { font-size: 12px; }
+    .result-breakdown { gap: 8px; }
+    .breakdown-item { padding: 10px 14px; min-width: 60px; }
+    .breakdown-value { font-size: 18px; }
+    .breakdown-plus { font-size: 15px; }
+    .btn-reset { align-self: stretch; text-align: center; }
+
+    /* DICAS */
+    .dicas-grid { grid-template-columns: 1fr; }
+    .dica-card { padding: 18px; }
+
+    /* FOOTER */
+    footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; gap: 8px; }
+  }
+
+  /* TABLET */
+  @media (min-width: 641px) and (max-width: 900px) {
+    nav { padding: 14px 24px; }
+    .nav-links { gap: 18px; }
+    .nav-links a { font-size: 12px; }
+    .hero { padding: 100px 24px 60px; }
+    section, #calculadora { padding: 64px 24px; }
+    .calc-header { padding: 20px 24px; flex-wrap: wrap; gap: 12px; }
+    .calc-section { padding: 20px 24px; }
+    .calc-result { padding: 24px; gap: 24px; }
+    .result-score-big { font-size: 64px; }
+    .class-grid { grid-template-columns: repeat(3, 1fr); }
+    .dicas-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -926,13 +1067,16 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo">⬡ Glasgow Scale</div>
-  <ul class="nav-links">
-    <li><a href="#sobre">Sobre</a></li>
-    <li><a href="#componentes">Componentes</a></li>
-    <li><a href="#classificacao">Classificação</a></li>
-    <li><a href="#calculadora">Calculadora</a></li>
-    <li><a href="#dicas">Dicas Clínicas</a></li>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#sobre" onclick="closeMenu()">Sobre</a></li>
+    <li><a href="#componentes" onclick="closeMenu()">Componentes</a></li>
+    <li><a href="#classificacao" onclick="closeMenu()">Classificação</a></li>
+    <li><a href="#calculadora" onclick="closeMenu()">Calculadora</a></li>
+    <li><a href="#dicas" onclick="closeMenu()">Dicas Clínicas</a></li>
   </ul>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -1493,6 +1637,25 @@
 </footer>
 
 <script>
+  function toggleMenu() {
+    const nav = document.getElementById('navLinks');
+    const btn = document.getElementById('hamburger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('navLinks').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+
+  // Fechar menu ao clicar fora
+  document.addEventListener('click', function(e) {
+    const nav = document.getElementById('navLinks');
+    const btn = document.getElementById('hamburger');
+    if (!nav.contains(e.target) && !btn.contains(e.target)) closeMenu();
+  });
+
   // ESTADO — null = não selecionado, 'NT' = não testável, número = pontuação
   const scores = { O: null, V: null, M: null };
 
