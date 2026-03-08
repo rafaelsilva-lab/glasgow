@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala de Glasgow · Avaliação Neurológica</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,900;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f2d45;
+    --text: #e8edf5;
+    --muted: #6b7a99;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --green: #00e5a0;
+    --yellow: #ffd166;
+    --red: #ff4d6d;
+    --critical: #ff1744;
+    --font-display: 'Source Serif 4', Georgia, serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID DE FUNDO */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-size: 13px;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 40px 60px;
+    z-index: 1;
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 800px;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 32px;
+    animation: fadeDown 0.8s ease forwards;
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 10vw, 96px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    animation: fadeUp 0.9s ease forwards;
+    animation-delay: 0.1s;
+    opacity: 0;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 24px;
+    line-height: 1.8;
+    animation: fadeUp 0.9s ease forwards;
+    animation-delay: 0.25s;
+    opacity: 0;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-score-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 48px;
+    animation: fadeUp 0.9s ease forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+
+  .score-dot {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    border: 2px solid;
+    transition: transform 0.3s;
+  }
+
+  .score-dot:hover { transform: scale(1.15); }
+  .score-dot.critical { color: var(--critical); border-color: var(--critical); background: rgba(255,23,68,0.1); }
+  .score-dot.severe { color: var(--red); border-color: var(--red); background: rgba(255,77,109,0.1); }
+  .score-dot.moderate { color: var(--yellow); border-color: var(--yellow); background: rgba(255,209,102,0.1); }
+  .score-dot.mild { color: var(--accent2); border-color: var(--accent2); background: rgba(255,107,53,0.1); }
+  .score-dot.normal { color: var(--green); border-color: var(--green); background: rgba(0,229,160,0.1); }
+
+  .hero-cta {
+    margin-top: 48px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.9s ease forwards;
+    animation-delay: 0.55s;
+    opacity: 0;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 14px 32px;
+    border: none;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: #33ddff; transform: translateY(-2px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    padding: 14px 32px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 80px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 40px;
+  }
+
+  /* SOBRE */
+  .sobre-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) { .sobre-grid { grid-template-columns: 1fr; } }
+
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    transition: border-color 0.3s;
+  }
+
+  .info-card:hover { border-color: rgba(0,212,255,0.3); }
+
+  .info-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  .info-card p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .info-card.highlight {
+    border-color: rgba(0,212,255,0.2);
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(17,24,39,0));
+    grid-column: span 2;
+  }
+
+  @media (max-width: 768px) { .info-card.highlight { grid-column: span 1; } }
+
+  /* COMPONENTES */
+  .componentes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 900px) { .componentes-grid { grid-template-columns: 1fr; } }
+
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .comp-card:hover { transform: translateY(-4px); border-color: rgba(0,212,255,0.4); }
+
+  .comp-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .comp-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+
+  .comp-icon.ocular { background: rgba(0,212,255,0.15); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+  .comp-icon.verbal { background: rgba(0,229,160,0.15); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .comp-icon.motor { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid rgba(255,107,53,0.3); }
+
+  .comp-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .comp-max {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .comp-items { padding: 16px 0; }
+
+  .comp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 24px;
+    border-bottom: 1px solid rgba(31,45,69,0.5);
+    transition: background 0.2s;
+  }
+
+  .comp-item:last-child { border-bottom: none; }
+  .comp-item:hover { background: rgba(255,255,255,0.02); }
+
+  .comp-item-score {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .score-1 { background: rgba(255,23,68,0.2); color: #ff4d6d; }
+  .score-2 { background: rgba(255,77,109,0.15); color: #ff7a95; }
+  .score-3 { background: rgba(255,209,102,0.15); color: var(--yellow); }
+  .score-4 { background: rgba(255,107,53,0.15); color: var(--accent2); }
+  .score-5 { background: rgba(0,229,160,0.15); color: var(--green); }
+  .score-6 { background: rgba(0,229,160,0.2); color: #33ffbe; }
+
+  .comp-item-text strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .comp-item-text span {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  /* CLASSIFICAÇÃO */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 900px) { .class-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .class-grid { grid-template-columns: 1fr; } }
+
+  .class-card {
+    border-radius: 4px;
+    padding: 24px 20px;
+    text-align: center;
+    border: 1px solid;
+    transition: transform 0.3s;
+  }
+
+  .class-card:hover { transform: scale(1.04); }
+
+  .class-card.c1 { border-color: rgba(255,23,68,0.4); background: rgba(255,23,68,0.07); }
+  .class-card.c2 { border-color: rgba(255,77,109,0.4); background: rgba(255,77,109,0.07); }
+  .class-card.c3 { border-color: rgba(255,209,102,0.4); background: rgba(255,209,102,0.07); }
+  .class-card.c4 { border-color: rgba(255,107,53,0.4); background: rgba(255,107,53,0.07); }
+  .class-card.c5 { border-color: rgba(0,229,160,0.4); background: rgba(0,229,160,0.07); }
+
+  .class-range {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .c1 .class-range { color: var(--critical); }
+  .c2 .class-range { color: var(--red); }
+  .c3 .class-range { color: var(--yellow); }
+  .c4 .class-range { color: var(--accent2); }
+  .c5 .class-range { color: var(--green); }
+
+  .class-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .class-desc {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    line-height: 1.5;
+  }
+
+  /* CALCULADORA */
+  #calculadora {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  .calc-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .calc-header {
+    padding: 28px 36px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+  }
+
+  .calc-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+
+  .calc-patient-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .patient-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 8px 16px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .patient-input:focus { border-color: var(--accent); }
+
+  .calc-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  @media (max-width: 900px) { .calc-body { grid-template-columns: 1fr; } }
+
+  .calc-section {
+    padding: 28px 32px;
+    border-right: 1px solid var(--border);
+  }
+
+  .calc-section:last-child { border-right: none; }
+
+  @media (max-width: 900px) {
+    .calc-section { border-right: none; border-bottom: 1px solid var(--border); }
+    .calc-section:last-child { border-bottom: none; }
+  }
+
+  .calc-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .calc-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .calc-section-title.ocular { color: var(--accent); }
+  .calc-section-title.verbal { color: var(--green); }
+  .calc-section-title.motor { color: var(--accent2); }
+
+  .calc-score-badge {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    min-width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    transition: all 0.3s;
+  }
+
+  .badge-ocular { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .badge-verbal { color: var(--green); border-color: var(--green); background: rgba(0,229,160,0.08); }
+  .badge-motor { color: var(--accent2); border-color: var(--accent2); background: rgba(255,107,53,0.08); }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .radio-option:hover { background: rgba(255,255,255,0.03); border-color: var(--border); }
+
+  .radio-option input[type="radio"] { display: none; }
+
+  .radio-custom {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.2s;
+  }
+
+  .radio-option.selected .radio-custom { border-color: var(--accent); }
+  .radio-option.selected .radio-custom::after { transform: translate(-50%, -50%) scale(1); }
+  .radio-option.selected { background: rgba(0,212,255,0.05); border-color: rgba(0,212,255,0.2); }
+
+  .radio-option.ocular-opt.selected { background: rgba(0,212,255,0.05); border-color: rgba(0,212,255,0.2); }
+  .radio-option.ocular-opt.selected .radio-custom { border-color: var(--accent); }
+  .radio-option.ocular-opt.selected .radio-custom::after { background: var(--accent); }
+
+  .radio-option.verbal-opt.selected { background: rgba(0,229,160,0.05); border-color: rgba(0,229,160,0.2); }
+  .radio-option.verbal-opt.selected .radio-custom { border-color: var(--green); }
+  .radio-option.verbal-opt.selected .radio-custom::after { background: var(--green); }
+
+  .radio-option.motor-opt.selected { background: rgba(255,107,53,0.05); border-color: rgba(255,107,53,0.2); }
+  .radio-option.motor-opt.selected .radio-custom { border-color: var(--accent2); }
+  .radio-option.motor-opt.selected .radio-custom::after { background: var(--accent2); }
+
+  .radio-label { flex: 1; }
+  .radio-label strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .radio-label span {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  .radio-score {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 24px;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* RESULTADO */
+  .calc-result {
+    border-top: 1px solid var(--border);
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .result-score-big {
+    font-family: var(--font-mono);
+    font-size: 80px;
+    font-weight: 700;
+    line-height: 1;
+    transition: all 0.4s;
+    letter-spacing: -4px;
+  }
+
+  .result-label {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .result-classification {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+    transition: color 0.4s;
+  }
+
+  .result-description {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .result-actions-line {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .action-item::before {
+    content: '→';
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+
+  .result-bar-container {
+    width: 100%;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .result-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s;
+  }
+
+  .result-breakdown {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .breakdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 20px;
+    min-width: 80px;
+  }
+
+  .breakdown-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .breakdown-value {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .breakdown-plus {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: var(--muted);
+    align-self: center;
+    padding-top: 12px;
+  }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover { border-color: var(--red); color: var(--red); }
+
+  /* NT — Não Testável */
+  .nt-opt { opacity: 0.7; }
+  .nt-opt:hover { opacity: 1; }
+  .nt-opt.selected {
+    background: rgba(107,122,153,0.08) !important;
+    border-color: rgba(107,122,153,0.35) !important;
+    opacity: 1;
+  }
+  .nt-opt.selected .radio-custom {
+    border-color: var(--muted) !important;
+  }
+  .nt-opt.selected .radio-custom::after {
+    background: var(--muted) !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  /* ALERTAS */
+  .alert-box {
+    background: rgba(255,23,68,0.08);
+    border: 1px solid rgba(255,23,68,0.3);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .alert-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .alert-text strong {
+    display: block;
+    color: var(--red);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .alert-text p {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+  }
+
+  /* DICAS */
+  .dicas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) { .dicas-grid { grid-template-columns: 1fr; } }
+
+  .dica-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    transition: border-color 0.3s;
+  }
+
+  .dica-card:hover { border-color: rgba(0,212,255,0.3); }
+
+  .dica-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .dica-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .dica-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-family: var(--font-mono);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer p {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  footer span { color: var(--accent); }
+
+  /* ANIMAÇÕES */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* TOOLTIP */
+  [data-tip] {
+    position: relative;
+    cursor: help;
+  }
+
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e2d45;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    color: var(--text);
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⬡ Glasgow Scale</div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#componentes">Componentes</a></li>
+    <li><a href="#classificacao">Classificação</a></li>
+    <li><a href="#calculadora">Calculadora</a></li>
+    <li><a href="#dicas">Dicas Clínicas</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">Escala de Coma de Glasgow · ECG</div>
+    <h1>Avaliação<br><span>Neurológica</span><br>Precisa</h1>
+    <p class="hero-sub">
+      Ferramenta essencial para técnicos de enfermagem na avaliação do nível de consciência. Aprenda, pratique e aplique com precisão.
+    </p>
+    <div class="hero-score-preview">
+      <div class="score-dot critical" data-tip="3 — Coma Profundo">3</div>
+      <div class="score-dot severe" data-tip="8 — TCE Grave">8</div>
+      <div class="score-dot moderate" data-tip="12 — TCE Moderado">12</div>
+      <div class="score-dot mild" data-tip="14 — TCE Leve">14</div>
+      <div class="score-dot normal" data-tip="15 — Normal">15</div>
+    </div>
+    <div class="hero-cta">
+      <a href="#calculadora" class="btn-primary">Usar Calculadora</a>
+      <a href="#componentes" class="btn-outline">Ver Componentes</a>
+    </div>
+  </div>
+</div>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="section-label">01 · Introdução</div>
+  <div class="section-title">O que é a<br>Escala de Glasgow?</div>
+  <div class="sobre-grid fade-in">
+    <div class="info-card highlight">
+      <h3>Origem e propósito</h3>
+      <p>A Escala de Coma de Glasgow (ECG) foi desenvolvida em 1974 pelos neurocirurgiões Graham Teasdale e Bryan Jennett, na Universidade de Glasgow, Escócia. É um instrumento padronizado para avaliar o nível de consciência de um paciente, amplamente utilizado em contextos de emergência, UTI e neurologia.</p>
+    </div>
+    <div class="info-card">
+      <h3>Pontuação Total</h3>
+      <p>A ECG varia de <strong style="color:var(--text)">3 a 15 pontos</strong>. A pontuação mínima de 3 indica ausência total de resposta observável. A pontuação máxima de 15 indica paciente completamente consciente, orientado e com motricidade preservada.</p>
+    </div>
+    <div class="info-card">
+      <h3>Quando aplicar?</h3>
+      <p>Em qualquer alteração do nível de consciência: trauma cranioencefálico, AVC, intoxicações, convulsões, rebaixamento súbito de consciência, pré e pós-operatório neurológico, e monitorização contínua de pacientes críticos.</p>
+    </div>
+    <div class="info-card">
+      <h3>Responsabilidade do Técnico</h3>
+      <p>O técnico de enfermagem deve realizar a avaliação da ECG de forma sistemática, registrar no prontuário com horário e contexto, comunicar imediatamente qualquer queda de 2 ou mais pontos ao enfermeiro ou médico responsável.</p>
+    </div>
+    <div class="info-card">
+      <h3>Limitações importantes</h3>
+      <p>A ECG <strong style="color:var(--text)">não deve ser aplicada isoladamente</strong>. Fatores como intubação orotraqueal (compromete componente verbal), uso de sedativos, paralisia muscular, lesões oculares ou periféricas podem interferir nos resultados e devem ser documentados.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTES -->
+<section id="componentes">
+  <div class="section-label">02 · Componentes</div>
+  <div class="section-title">Os três<br>pilares da avaliação</div>
+  <div class="componentes-grid fade-in">
+
+    <!-- OCULAR -->
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-icon ocular">O</div>
+        <div>
+          <div class="comp-title">Abertura Ocular</div>
+          <div class="comp-max">Máx: 4 pontos</div>
+        </div>
+      </div>
+      <div class="comp-items">
+        <div class="comp-item">
+          <div class="comp-item-score score-4">4</div>
+          <div class="comp-item-text">
+            <strong>Espontânea</strong>
+            <span>Abre os olhos sem estímulo</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-3">3</div>
+          <div class="comp-item-text">
+            <strong>Ao Som</strong>
+            <span>Abre ao comando de voz normal ou em voz alta</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-2">2</div>
+          <div class="comp-item-text">
+            <strong>À Pressão</strong>
+            <span>Abre com pressão na extremidade dos dedos</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-1">1</div>
+          <div class="comp-item-text">
+            <strong>Ausente</strong>
+            <span>Sem abertura, sem fatores de interferência</span>
+          </div>
+        </div>
+        <div class="comp-item" style="opacity:0.65">
+          <div class="comp-item-score" style="background:rgba(107,122,153,0.15);color:var(--muted);font-family:var(--font-mono);font-size:10px;font-weight:700;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">NT</div>
+          <div class="comp-item-text">
+            <strong style="color:var(--muted)">Não Testável</strong>
+            <span>Fator de interferência presente (ex: edema ocular)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VERBAL -->
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-icon verbal">V</div>
+        <div>
+          <div class="comp-title">Resposta Verbal</div>
+          <div class="comp-max">Máx: 5 pontos</div>
+        </div>
+      </div>
+      <div class="comp-items">
+        <div class="comp-item">
+          <div class="comp-item-score score-5">5</div>
+          <div class="comp-item-text">
+            <strong>Orientado</strong>
+            <span>Nome, lugar, data corretamente</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-4">4</div>
+          <div class="comp-item-text">
+            <strong>Confuso</strong>
+            <span>Conversa, mas desorientado</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-3">3</div>
+          <div class="comp-item-text">
+            <strong>Palavras</strong>
+            <span>Palavras isoladas inteligíveis</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-2">2</div>
+          <div class="comp-item-text">
+            <strong>Sons</strong>
+            <span>Apenas gemidos ou grunhidos</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-1">1</div>
+          <div class="comp-item-text">
+            <strong>Ausente</strong>
+            <span>Sem resposta audível, sem fatores de interferência</span>
+          </div>
+        </div>
+        <div class="comp-item" style="opacity:0.65">
+          <div class="comp-item-score" style="background:rgba(107,122,153,0.15);color:var(--muted);font-family:var(--font-mono);font-size:10px;font-weight:700;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">NT</div>
+          <div class="comp-item-text">
+            <strong style="color:var(--muted)">Não Testável</strong>
+            <span>Fator que interfere com a comunicação (ex: IOT)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTOR -->
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-icon motor">M</div>
+        <div>
+          <div class="comp-title">Resposta Motora</div>
+          <div class="comp-max">Máx: 6 pontos</div>
+        </div>
+      </div>
+      <div class="comp-items">
+        <div class="comp-item">
+          <div class="comp-item-score score-6">6</div>
+          <div class="comp-item-text">
+            <strong>Obedece a comandos</strong>
+            <span>Realiza movimentos solicitados</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-5">5</div>
+          <div class="comp-item-text">
+            <strong>Localizadora</strong>
+            <span>Eleva a mão acima da clavícula ao estímulo na cabeça/pescoço</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-4">4</div>
+          <div class="comp-item-text">
+            <strong>Flexão Normal</strong>
+            <span>Flexão rápida do MS no cotovelo, padrão não anormal</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-3">3</div>
+          <div class="comp-item-text">
+            <strong>Flexão Anormal</strong>
+            <span>Flexão lenta e estereotipada — decorticação</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-2">2</div>
+          <div class="comp-item-text">
+            <strong>Extensão</strong>
+            <span>Extensão do MS no cotovelo — descerebração</span>
+          </div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-item-score score-1">1</div>
+          <div class="comp-item-text">
+            <strong>Ausente</strong>
+            <span>Sem movimentos, sem fatores de interferência</span>
+          </div>
+        </div>
+        <div class="comp-item" style="opacity:0.65">
+          <div class="comp-item-score" style="background:rgba(107,122,153,0.15);color:var(--muted);font-family:var(--font-mono);font-size:10px;font-weight:700;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">NT</div>
+          <div class="comp-item-text">
+            <strong style="color:var(--muted)">Não Testável</strong>
+            <span>Fator que limita resposta motora (ex: paralisia, sedação)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CLASSIFICAÇÃO -->
+<section id="classificacao">
+  <div class="section-label">03 · Classificação</div>
+  <div class="section-title">Interpretando<br>o resultado</div>
+  <div class="class-grid fade-in">
+    <div class="class-card c1">
+      <div class="class-range">3</div>
+      <div class="class-name">Coma Profundo</div>
+      <div class="class-desc">Sem resposta em nenhum componente. Situação crítica.</div>
+    </div>
+    <div class="class-card c2">
+      <div class="class-range">4–8</div>
+      <div class="class-name">TCE Grave</div>
+      <div class="class-desc">Coma. Requer monitorização intensiva e suporte imediato.</div>
+    </div>
+    <div class="class-card c3">
+      <div class="class-range">9–12</div>
+      <div class="class-name">TCE Moderado</div>
+      <div class="class-desc">Comprometimento significativo. Vigilância contínua obrigatória.</div>
+    </div>
+    <div class="class-card c4">
+      <div class="class-range">13–14</div>
+      <div class="class-name">TCE Leve</div>
+      <div class="class-desc">Comprometimento leve. Monitorar para deterioração.</div>
+    </div>
+    <div class="class-card c5">
+      <div class="class-range">15</div>
+      <div class="class-name">Normal</div>
+      <div class="class-desc">Consciência plena, orientado, sem déficit neurológico.</div>
+    </div>
+  </div>
+
+  <div class="alert-box fade-in">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <strong>Sinal de alarme crítico</strong>
+      <p>Qualquer queda de 2 ou mais pontos na ECG em relação à avaliação anterior deve ser comunicada IMEDIATAMENTE ao enfermeiro ou médico responsável. Isso pode indicar deterioração neurológica aguda como herniação cerebral, sangramento intracraniano ou isquemia progressiva.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULADORA -->
+<section id="calculadora">
+  <div class="section-label">04 · Ferramenta Clínica</div>
+  <div class="section-title">Calculadora<br>Interativa</div>
+
+  <div class="calc-wrapper fade-in">
+    <div class="calc-header">
+      <div class="calc-title">Avaliação do Paciente</div>
+      <div class="calc-patient-info">
+        <input type="text" class="patient-input" placeholder="Nome do paciente" id="patientName">
+        <input type="text" class="patient-input" placeholder="Leito / ID" id="patientBed" style="width:120px">
+      </div>
+    </div>
+
+    <div class="calc-body">
+
+      <!-- OCULAR -->
+      <div class="calc-section">
+        <div class="calc-section-header">
+          <span class="calc-section-title ocular">Abertura Ocular</span>
+          <div class="calc-score-badge badge-ocular" id="score-O">—</div>
+        </div>
+        <div class="radio-group" id="group-O">
+          <label class="radio-option ocular-opt" data-value="4">
+            <input type="radio" name="ocular" value="4">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Espontânea</strong>
+              <span>Abre sem qualquer estímulo</span>
+            </div>
+            <div class="radio-score">4</div>
+          </label>
+          <label class="radio-option ocular-opt" data-value="3">
+            <input type="radio" name="ocular" value="3">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Ao Som</strong>
+              <span>Responde à voz normal ou em voz alta</span>
+            </div>
+            <div class="radio-score">3</div>
+          </label>
+          <label class="radio-option ocular-opt" data-value="2">
+            <input type="radio" name="ocular" value="2">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>À Pressão</strong>
+              <span>Pressão na extremidade dos dedos</span>
+            </div>
+            <div class="radio-score">2</div>
+          </label>
+          <label class="radio-option ocular-opt" data-value="1">
+            <input type="radio" name="ocular" value="1">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Ausente</strong>
+              <span>Sem abertura, sem fatores de interferência</span>
+            </div>
+            <div class="radio-score">1</div>
+          </label>
+          <label class="radio-option ocular-opt nt-opt" data-value="NT">
+            <input type="radio" name="ocular" value="NT">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Não Testável</strong>
+              <span>Fator de interferência presente (ex: edema ocular)</span>
+            </div>
+            <div class="radio-score" style="color:var(--muted)">NT</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- VERBAL -->
+      <div class="calc-section">
+        <div class="calc-section-header">
+          <span class="calc-section-title verbal">Resposta Verbal</span>
+          <div class="calc-score-badge badge-verbal" id="score-V">—</div>
+        </div>
+        <div class="radio-group" id="group-V">
+          <label class="radio-option verbal-opt" data-value="5">
+            <input type="radio" name="verbal" value="5">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Orientado</strong>
+              <span>Nome, lugar, data corretos</span>
+            </div>
+            <div class="radio-score">5</div>
+          </label>
+          <label class="radio-option verbal-opt" data-value="4">
+            <input type="radio" name="verbal" value="4">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Confuso</strong>
+              <span>Conversa mas desorientado</span>
+            </div>
+            <div class="radio-score">4</div>
+          </label>
+          <label class="radio-option verbal-opt" data-value="3">
+            <input type="radio" name="verbal" value="3">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Palavras</strong>
+              <span>Palavras isoladas inteligíveis</span>
+            </div>
+            <div class="radio-score">3</div>
+          </label>
+          <label class="radio-option verbal-opt" data-value="2">
+            <input type="radio" name="verbal" value="2">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Sons</strong>
+              <span>Apenas gemidos ou grunhidos</span>
+            </div>
+            <div class="radio-score">2</div>
+          </label>
+          <label class="radio-option verbal-opt" data-value="1">
+            <input type="radio" name="verbal" value="1">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Ausente</strong>
+              <span>Sem resposta audível, sem interferência</span>
+            </div>
+            <div class="radio-score">1</div>
+          </label>
+          <label class="radio-option verbal-opt nt-opt" data-value="NT">
+            <input type="radio" name="verbal" value="NT">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Não Testável</strong>
+              <span>Fator de interferência (ex: intubação orotraqueal)</span>
+            </div>
+            <div class="radio-score" style="color:var(--muted)">NT</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- MOTOR -->
+      <div class="calc-section">
+        <div class="calc-section-header">
+          <span class="calc-section-title motor">Resposta Motora</span>
+          <div class="calc-score-badge badge-motor" id="score-M">—</div>
+        </div>
+        <div class="radio-group" id="group-M">
+          <label class="radio-option motor-opt" data-value="6">
+            <input type="radio" name="motor" value="6">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Obedece a comandos</strong>
+              <span>Realiza o que é solicitado</span>
+            </div>
+            <div class="radio-score">6</div>
+          </label>
+          <label class="radio-option motor-opt" data-value="5">
+            <input type="radio" name="motor" value="5">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Localizadora</strong>
+              <span>Eleva mão acima da clavícula ao estímulo</span>
+            </div>
+            <div class="radio-score">5</div>
+          </label>
+          <label class="radio-option motor-opt" data-value="4">
+            <input type="radio" name="motor" value="4">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Flexão Normal</strong>
+              <span>Flexão rápida do MS, padrão não anormal</span>
+            </div>
+            <div class="radio-score">4</div>
+          </label>
+          <label class="radio-option motor-opt" data-value="3">
+            <input type="radio" name="motor" value="3">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Flexão Anormal</strong>
+              <span>Flexão lenta e estereotipada — decorticação</span>
+            </div>
+            <div class="radio-score">3</div>
+          </label>
+          <label class="radio-option motor-opt" data-value="2">
+            <input type="radio" name="motor" value="2">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Extensão</strong>
+              <span>Extensão do MS no cotovelo — descerebração</span>
+            </div>
+            <div class="radio-score">2</div>
+          </label>
+          <label class="radio-option motor-opt" data-value="1">
+            <input type="radio" name="motor" value="1">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Ausente</strong>
+              <span>Sem movimentos, sem fatores de interferência</span>
+            </div>
+            <div class="radio-score">1</div>
+          </label>
+          <label class="radio-option motor-opt nt-opt" data-value="NT">
+            <input type="radio" name="motor" value="NT">
+            <div class="radio-custom"></div>
+            <div class="radio-label">
+              <strong>Não Testável</strong>
+              <span>Fator limitante (ex: paralisia, sedação profunda)</span>
+            </div>
+            <div class="radio-score" style="color:var(--muted)">NT</div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="calc-result">
+      <div class="result-score-big" id="totalScore" style="color: var(--muted)">—</div>
+      <div class="result-label">
+        <div class="result-classification" id="classification" style="color: var(--muted)">Aguardando avaliação</div>
+        <div class="result-description" id="classDesc">Selecione uma opção em cada componente para calcular a pontuação.</div>
+        <div class="result-actions-line" id="actionsList"></div>
+        <div class="result-bar-container">
+          <div class="result-bar" id="resultBar" style="width:0%;background:var(--muted)"></div>
+        </div>
+        <div class="result-breakdown" id="breakdown">
+          <div class="breakdown-item">
+            <span class="breakdown-label">Ocular</span>
+            <span class="breakdown-value" id="bd-O" style="color:var(--accent)">—</span>
+          </div>
+          <div class="breakdown-plus">+</div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Verbal</span>
+            <span class="breakdown-value" id="bd-V" style="color:var(--green)">—</span>
+          </div>
+          <div class="breakdown-plus">+</div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Motor</span>
+            <span class="breakdown-value" id="bd-M" style="color:var(--accent2)">—</span>
+          </div>
+          <div class="breakdown-plus">=</div>
+          <div class="breakdown-item" style="border-color: rgba(0,212,255,0.3)">
+            <span class="breakdown-label">Total</span>
+            <span class="breakdown-value" id="bd-T" style="color:var(--text)">—</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-reset" onclick="resetCalc()">↺ Reiniciar</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- DICAS -->
+<section id="dicas">
+  <div class="section-label">05 · Boas Práticas</div>
+  <div class="section-title">Dicas clínicas<br>para o técnico</div>
+  <div class="dicas-grid fade-in">
+    <div class="dica-card">
+      <div class="dica-num">01</div>
+      <h4>Avalie sempre na mesma sequência</h4>
+      <p>Siga sempre a ordem O → V → M para padronizar e evitar erros. Registre o escore de cada componente separadamente (ex: O3V4M5 = ECG 12).</p>
+    </div>
+    <div class="dica-card">
+      <div class="dica-num">02</div>
+      <h4>Estimulação dolorosa correta</h4>
+      <p>Nos componentes que exigem estímulo doloroso, prefira pressão no leito ungueal, pressão supraorbital ou beliscão no trapézio. Evite métodos que causem lesão tisular.</p>
+    </div>
+    <div class="dica-card">
+      <div class="dica-num">03</div>
+      <h4>Documente condições que interferem</h4>
+      <p>Paciente intubado? Registre "V=T" (traqueostomia/TOT). Olhos edemaciados? Registre "O=C" (fechado). Esses dados são essenciais para comparações futuras.</p>
+    </div>
+    <div class="dica-card">
+      <div class="dica-num">04</div>
+      <h4>Frequência de avaliação</h4>
+      <p>Em pacientes instáveis ou nas primeiras 24h após TCE: a cada 15–30 minutos. Em pacientes estáveis: a cada 1–4h conforme protocolo da instituição. Registre sempre o horário.</p>
+    </div>
+    <div class="dica-card">
+      <div class="dica-num">05</div>
+      <h4>Use sempre o melhor lado</h4>
+      <p>Em pacientes com hemiplegia, avalie o componente motor no lado com maior resposta. A ECG avalia o melhor desempenho do paciente, não o pior.</p>
+    </div>
+    <div class="dica-card">
+      <div class="dica-num">06</div>
+      <h4>Comunicação em equipe</h4>
+      <p>Ao passar o plantão, informe sempre a ECG do horário com os três componentes (ex: "Glasgow 13, ocular 4, verbal 4, motor 5"). Evite apenas o número total sem os subescores.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>⬡ Escala de Glasgow · Material educacional para <span>técnicos de enfermagem</span></p>
+  <p style="font-size:11px">Teasdale G, Jennett B · The Lancet, 1974 · Uso clínico sujeito à supervisão do enfermeiro responsável</p>
+</footer>
+
+<script>
+  // ESTADO — null = não selecionado, 'NT' = não testável, número = pontuação
+  const scores = { O: null, V: null, M: null };
+
+  // CLASSIFICAÇÕES
+  const classifications = [
+    { min: 3,  max: 3,  label: 'Coma Profundo',     color: '#ff1744', bar: '#ff1744',
+      desc: 'Sem resposta em nenhum componente. Situação extremamente crítica.',
+      actions: ['Acionamento imediato da equipe médica', 'Preparar para intubação orotraqueal', 'Monitorização contínua multiparamétrica', 'Acesso venoso calibroso se ausente'] },
+    { min: 4,  max: 8,  label: 'TCE Grave',          color: '#ff4d6d', bar: '#ff4d6d',
+      desc: 'Estado de coma. Requer manejo neurológico e suporte ventilatório urgente.',
+      actions: ['Comunicar enfermeiro/médico imediatamente', 'Elevar cabeceira a 30°', 'Monitorar frequência respiratória', 'Preparar material para vias aéreas'] },
+    { min: 9,  max: 12, label: 'TCE Moderado',       color: '#ffd166', bar: '#ffd166',
+      desc: 'Comprometimento neurológico significativo. Vigilância contínua obrigatória.',
+      actions: ['Reavaliações frequentes (15–30 min)', 'Comunicar qualquer queda de 2+ pontos', 'Manter paciente em segurança (grades)', 'Registrar horário e contexto'] },
+    { min: 13, max: 14, label: 'TCE Leve',            color: '#ff6b35', bar: '#ff6b35',
+      desc: 'Leve comprometimento da consciência. Monitorar para detectar deterioração.',
+      actions: ['Avaliações de 1 em 1 hora nas primeiras 6h', 'Orientar família sobre sinais de alerta', 'Registrar no prontuário com horário'] },
+    { min: 15, max: 15, label: 'Consciência Normal',  color: '#00e5a0', bar: '#00e5a0',
+      desc: 'Paciente orientado, com abertura ocular espontânea e resposta motora preservada.',
+      actions: ['Manter monitorização de rotina', 'Reavaliar conforme protocolo da unidade'] },
+  ];
+
+  function getClassification(total) {
+    return classifications.find(c => total >= c.min && total <= c.max);
+  }
+
+  function displayVal(v) {
+    if (v === null) return '—';
+    if (v === 'NT') return 'NT';
+    return v;
+  }
+
+  function updateCalc() {
+    const O = scores.O;
+    const V = scores.V;
+    const M = scores.M;
+
+    // Badges individuais
+    document.getElementById('score-O').textContent = displayVal(O);
+    document.getElementById('score-V').textContent = displayVal(V);
+    document.getElementById('score-M').textContent = displayVal(M);
+
+    // Breakdown
+    document.getElementById('bd-O').textContent = displayVal(O);
+    document.getElementById('bd-V').textContent = displayVal(V);
+    document.getElementById('bd-M').textContent = displayVal(M);
+
+    const allSelected = O !== null && V !== null && M !== null;
+    const hasNT = O === 'NT' || V === 'NT' || M === 'NT';
+
+    if (allSelected) {
+      if (hasNT) {
+        // Algum componente NT: calcula apenas os pontuáveis, exibe com NT
+        const numericSum = [O, V, M].filter(v => v !== 'NT').reduce((a, b) => a + b, 0);
+        const ntCount = [O, V, M].filter(v => v === 'NT').length;
+        const label = numericSum + '+' + ntCount + 'NT';
+
+        document.getElementById('totalScore').textContent = label;
+        document.getElementById('totalScore').style.color = 'var(--yellow)';
+        document.getElementById('bd-T').textContent = label;
+        document.getElementById('bd-T').style.color = 'var(--yellow)';
+        document.getElementById('classification').textContent = 'Avaliação Incompleta';
+        document.getElementById('classification').style.color = 'var(--yellow)';
+        document.getElementById('classDesc').textContent = 'Um ou mais componentes são Não Testáveis. Documente os fatores de interferência no prontuário e comunique ao enfermeiro responsável. A pontuação numérica é parcial.';
+        document.getElementById('actionsList').innerHTML =
+          ['Registrar fatores de interferência no prontuário',
+           'Comunicar ao enfermeiro/médico responsável',
+           'Reavaliar assim que o fator de interferência for resolvido']
+          .map(a => `<div class="action-item">${a}</div>`).join('');
+        document.getElementById('resultBar').style.width = '0%';
+        document.getElementById('resultBar').style.background = 'var(--yellow)';
+
+      } else {
+        // Todos numéricos
+        const total = O + V + M;
+        const cls = getClassification(total);
+
+        document.getElementById('totalScore').textContent = total;
+        document.getElementById('totalScore').style.color = cls.color;
+        document.getElementById('bd-T').textContent = total;
+        document.getElementById('bd-T').style.color = cls.color;
+        document.getElementById('classification').textContent = cls.label;
+        document.getElementById('classification').style.color = cls.color;
+        document.getElementById('classDesc').textContent = cls.desc;
+        document.getElementById('actionsList').innerHTML = cls.actions.map(a => `<div class="action-item">${a}</div>`).join('');
+
+        const pct = ((total - 3) / 12) * 100;
+        const bar = document.getElementById('resultBar');
+        bar.style.width = pct + '%';
+        bar.style.background = cls.bar;
+      }
+    } else {
+      // Parcial — preview enquanto seleciona
+      const numericPartial = [O, V, M].filter(v => v !== null && v !== 'NT').reduce((a, b) => a + b, 0);
+      if (numericPartial > 0 || hasNT) {
+        document.getElementById('totalScore').textContent = numericPartial + '*';
+        document.getElementById('totalScore').style.color = 'var(--muted)';
+        document.getElementById('bd-T').textContent = numericPartial + '*';
+        document.getElementById('bd-T').style.color = 'var(--muted)';
+      }
+    }
+  }
+
+  // Event listeners para rádios
+  ['ocular', 'verbal', 'motor'].forEach(name => {
+    const key = name === 'ocular' ? 'O' : name === 'verbal' ? 'V' : 'M';
+    const group = document.getElementById('group-' + key);
+
+    group.querySelectorAll('.radio-option').forEach(option => {
+      option.addEventListener('click', function() {
+        group.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input').checked = true;
+        const raw = this.dataset.value;
+        scores[key] = raw === 'NT' ? 'NT' : parseInt(raw);
+        updateCalc();
+      });
+    });
+  });
+
+  function resetCalc() {
+    scores.O = null; scores.V = null; scores.M = null;
+
+    document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+    ['score-O','score-V','score-M','bd-O','bd-V','bd-M','bd-T'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('totalScore').textContent = '—';
+    document.getElementById('totalScore').style.color = 'var(--muted)';
+    document.getElementById('bd-T').style.color = 'var(--text)';
+    document.getElementById('classification').textContent = 'Aguardando avaliação';
+    document.getElementById('classification').style.color = 'var(--muted)';
+    document.getElementById('classDesc').textContent = 'Selecione uma opção em cada componente para calcular a pontuação.';
+    document.getElementById('actionsList').innerHTML = '';
+    document.getElementById('resultBar').style.width = '0%';
+    document.getElementById('resultBar').style.background = 'var(--muted)';
+    document.getElementById('patientName').value = '';
+    document.getElementById('patientBed').value = '';
+  }
+
+  // Intersection Observer para animações
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
